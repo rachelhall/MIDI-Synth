@@ -10,5 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "tone": "^13.8.25"
+  },
+  "devDependencies": {
+    "cssnano": "^4.1.10"
   }
 }
