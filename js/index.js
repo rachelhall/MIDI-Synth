@@ -1,4 +1,4 @@
-import Tone from "tone"
+import Tone from "tone";
 
 // Tone.Synth is a basic synthesizer with a single oscillator
 const synth = new Tone.Synth();
@@ -10,8 +10,9 @@ const delay = new Tone.FeedbackDelay(
 ).toMaster();
 const reverb = new Tone.Reverb().toMaster();
 const gain = new Tone.Gain(0.5).toMaster();
+let wave = "triangle"
 // Set the tone to sine
-synth.oscillator.type = "triangle";
+synth.oscillator.type = wave;
 // connect it to the master output (your speakers)
 synth.chain(delay, reverb, gain).toMaster();
 
@@ -22,19 +23,27 @@ const piano = document.getElementById("piano");
 piano.addEventListener("mousedown", e => {
   // fires off a note continously until trigger is released
   synth.triggerAttack(e.target.dataset.note);
+  console.log(e.target);
+  e.target.classList.toggle("active-white");
 });
 
 piano.addEventListener("mouseup", e => {
   // stops the trigger
   synth.triggerRelease();
+  e.target.classList.toggle("active-white");
 });
+
 
 // handles keyboard events
 document.addEventListener("keydown", e => {
   // e object has the key property to tell which key was pressed
   switch (e.key) {
     case "a":
-      return synth.triggerAttack("A3");
+       synth.triggerAttack("A3");
+       e.target.classList.toggle("active-white");
+       console.log("the key is " + e.key)
+       
+       break;
     case "w":
       return synth.triggerAttack("A#3");
     case "s":
@@ -98,3 +107,4 @@ powerButton.addEventListener('click', function() {
   logo.classList.toggle("glow");
 
 });
+

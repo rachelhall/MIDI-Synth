@@ -141,26 +141,33 @@ var delay = new _tone.default.FeedbackDelay({
   maxDelay: 1
 }).toMaster();
 var reverb = new _tone.default.Reverb().toMaster();
-var gain = new _tone.default.Gain(0.5).toMaster(); // Set the tone to sine
+var gain = new _tone.default.Gain(0.5).toMaster();
+var wave = "triangle"; // Set the tone to sine
 
-synth.oscillator.type = "triangle"; // connect it to the master output (your speakers)
+synth.oscillator.type = wave; // connect it to the master output (your speakers)
 
 synth.chain(delay, reverb, gain).toMaster();
 var piano = document.getElementById("piano");
 piano.addEventListener("mousedown", function (e) {
   // fires off a note continously until trigger is released
   synth.triggerAttack(e.target.dataset.note);
+  console.log(e.target);
+  e.target.classList.toggle("active-white");
 });
 piano.addEventListener("mouseup", function (e) {
   // stops the trigger
   synth.triggerRelease();
+  e.target.classList.toggle("active-white");
 }); // handles keyboard events
 
 document.addEventListener("keydown", function (e) {
   // e object has the key property to tell which key was pressed
   switch (e.key) {
     case "a":
-      return synth.triggerAttack("A3");
+      synth.triggerAttack("A3");
+      e.target.classList.toggle("active-white");
+      console.log("the key is " + e.key);
+      break;
 
     case "w":
       return synth.triggerAttack("A#3");
@@ -263,7 +270,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61069" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59682" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

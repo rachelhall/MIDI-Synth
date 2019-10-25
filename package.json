@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "nexusui": "^2.0.10",
     "tone": "^13.8.25"
   },
   "devDependencies": {

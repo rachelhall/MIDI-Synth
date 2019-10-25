@@ -1,6 +1,8 @@
+// Let's import everything we're gonna need
 import Tone from 'tone';
+import Nexus from "nexusui";
 
-// Tone.Synth is a basic synthesizer with a single oscillator
+// Build the synth with Tone.js
 const synth = new Tone.Synth();
 const delay = new Tone.FeedbackDelay(
 	{
@@ -12,12 +14,58 @@ const reverb = new Tone.Reverb({
 	decay : 1.5 ,
 	preDelay : 0.01
 	}).toMaster();
-const gain = new Tone.Gain(0.5).toMaster();
-// Set the tone to sine
-synth.oscillator.type = 'triangle';
-// connect it to the master output (your speakers)
+	let volumeLevel;
+const gain = new Tone.Gain(10).toMaster();
+let wave = "triangle";
+synth.oscillator.type = wave;
+
+// Some funcgtions that allow our buttons to change their wavetypes
+function waveSine(){
+	wave = "sine";
+	synth.oscillator.type = wave;
+};
+
+function waveTriangle(){
+	wave = "triangle";
+	synth.oscillator.type = wave;
+};
+function waveSquare(){
+	wave = "sawtooth";
+}
+
+const sineButton = document.querySelector(".wave-sine");
+sineButton.addEventListener('click', function() {
+	waveSine();
+	console.log(wave);
+	sineButton.classList.toggle("wavebutton-active");
+	// squareButton.classList.remove("wavebutton-active")
+	triangleButton.classList.remove("wavebutton-active");
+})
+
+const triangleButton = document.querySelector(".wave-triangle");
+triangleButton.addEventListener('click', function() {
+	waveTriangle();
+	console.log(wave);
+	sineButton.classList.remove("wavebutton-active")
+	// squareButton.classList.remove("wavebutton-active")
+	triangleButton.classList.toggle("wavebutton-active")
+})
+
+// const squareButton = document.querySelector(".wave-square");
+// squareButton.addEventListener('click', function() {
+// 	waveSquare();
+// 	console.log(wave);
+// 	sineButton.classList.remove("wavebutton-active")
+// 	triangleButton.classList.remove("wavebutton-active")
+// 	squareButton.classList.toggle("wavebutton-active")
+// })
+
+// toMaster() sends our chain to the speakers
 synth.chain(delay, reverb, gain).toMaster();
 
+//--------------------------------------------------------------------
+
+//Get the broswer listening for MIDI
 if (navigator.requestMIDIAccess) {
 	navigator.requestMIDIAccess().then(success, failure);
 }
@@ -43,6 +91,23 @@ function onMIDIMessage(message) {
 	const velocity = message.data.length > 2 ? message.data[2] : 0; // a velocity value might not be included with a noteOff comman
 	console.log('the note is ' + note);
 
+	const A3 = document.querySelector(".A3");
+	const ASharp3 = document.querySelector(".ASharp3");
+	const B3 = document.querySelector(".B3");
+	const C4 = document.querySelector(".C4");
+	const CSharp4 = document.querySelector(".CSharp4");
+	const D4 = document.querySelector(".D4");
+	const DSharp4 = document.querySelector(".DSharp4");
+	const E4 = document.querySelector(".E4");
+	const F4 = document.querySelector(".F4");
+	const FSharp4 = document.querySelector(".FSharp4");
+	const G4 = document.querySelector(".G4");
+	const GSharp4 = document.querySelector(".GSharp4");
+	const A4 = document.querySelector(".A4");
+	const ASharp4 = document.querySelector(".ASharp4");
+	const B4 = document.querySelector(".B4");
+
+	//map the midi value to note values
 	switch (note) {
 		case 28:
 			note = 'E1';
@@ -133,48 +198,63 @@ function onMIDIMessage(message) {
 			break;
 		case 57:
 			note = 'A3';
+			A3.classList.toggle("active-white");
 			break;
 		case 58:
 			note = 'A#3';
+			ASharp3.classList.toggle("active-black");
 			break;
 		case 59:
 			note = 'B3';
+			B3.classList.toggle("active-white");
 			break;
 		case 60:
 			note = 'C4';
+			C4.classList.toggle("active-white");
 			break;
 		case 61:
 			note = 'C#4';
+			CSharp4.classList.toggle("active-black");
 			break;
 		case 62:
 			note = 'D4';
+			D4.classList.toggle("active-white");
 			break;
 		case 63:
 			note = 'D#4';
+			DSharp4.classList.toggle("active-black");
 			break;
 		case 64:
 			note = 'E4';
+			E4.classList.toggle("active-white");
 			break;
 		case 65:
 			note = 'F4';
+			F4.classList.toggle("active-white");
 			break;
 		case 66:
 			note = 'F#4';
+			FSharp4.classList.toggle("active-black");
 			break;
 		case 67:
 			note = 'G4';
+			G4.classList.toggle("active-white");
 			break;
 		case 68:
 			note = 'G#4';
+			GSharp4.classList.toggle("active-black");
 			break;
 		case 69:
 			note = 'A4';
+			A4.classList.toggle("active-white");
 			break;
 		case 70:
 			note = 'A#4';
+			ASharp4.classList.toggle("active-black");
 			break;
 		case 71:
 			note = 'B4';
+			B4.classList.toggle("active-white");
 			break;
 		case 72:
 			note = 'C5';
@@ -274,24 +354,14 @@ function onMIDIMessage(message) {
 			break;
 	}
 
-	// if(note === 65){
-	//     console.log("The note is F")
-	//     note = "F4"
-	//     console.log(note);
-	// }
-
+	//pass notes into the playNote() and stopNote() functions
 	if (message.data[0] === 144 && message.data[2] > 0) {
 		playNote(note);
 	}
 
 	if (message.data[0] === 128 || message.data[2] === 0) {
-		//console.log("stopNote")
 		stopNote();
 	}
-}
-
-function midiNoteToFrequency(note) {
-	return Math.pow(2, (note - 69) / 12) * 440;
 }
 
 function playNote(note) {
@@ -301,4 +371,109 @@ function playNote(note) {
 
 function stopNote() {
 	synth.triggerRelease();
+	
 }
+
+// Not using this, but it's there in case I need to do some frequency conversion
+function midiNoteToFrequency(note) {
+	return Math.pow(2, (note - 69) / 12) * 440;
+}
+
+//-----------------------------------------------------------------------
+
+//Now let's hook up our on-screen keyboard
+const piano = document.getElementById("piano");
+
+// Let's listen for the mouse events
+piano.addEventListener("mousedown", e => {
+  // fires off a note continously until trigger is released
+  synth.triggerAttack(e.target.dataset.note);
+  console.log(e.target);
+  e.target.classList.toggle("active-white");
+});
+
+piano.addEventListener("mouseup", e => {
+  // stops the trigger
+  synth.triggerRelease();
+  e.target.classList.toggle("active-white");
+});
+
+
+// Now turn your ear to the keyboard events
+document.addEventListener("keydown", e => {
+  // e object has the key property to tell which key was pressed
+  switch (e.key) {
+    case "a":
+       synth.triggerAttack("A3");
+       //e.target.classList.toggle("active-white");
+       console.log("the key is " + e.key)
+       break;
+    case "w":
+      return synth.triggerAttack("A#3");
+    case "s":
+      return synth.triggerAttack("B3");
+    case "d":
+      return synth.triggerAttack("C4");
+    case "r":
+      return synth.triggerAttack("C#4");
+    case "f":
+      return synth.triggerAttack("D4");
+    case "t":
+      return synth.triggerAttack("D#4");
+    case "g":
+      return synth.triggerAttack("E4");
+    case "h":
+      return synth.triggerAttack("F4");
+    case "u":
+      return synth.triggerAttack("F#4");
+    case "j":
+      return synth.triggerAttack("G4");
+    case "i":
+      return synth.triggerAttack("G#4");
+    case "k":
+      return synth.triggerAttack("A4");
+    case "o":
+      return synth.triggerAttack("A#4");
+    case "l":
+      return synth.triggerAttack("B4");
+    default:
+      return;
+  }
+});
+// when the key is released, audio is released as well
+document.addEventListener("keyup", e => {
+  switch (e.key) {
+    case "a":
+    case "w":
+    case "s":
+    case "d":
+    case "r":
+    case "f":
+    case "t":
+    case "g":
+    case "h":
+    case "u":
+    case "j":
+    case "i":
+    case "k":
+    case "o":
+    case "l":
+       synth.triggerRelease(); 
+  }
+});
+
+//--------------------------------------------------------
+
+// Now let's get some buttons cooking on the control panel
+const powerButton = document.querySelector('.power-button');
+const logo = document.querySelector(".logo");
+
+powerButton.addEventListener('click', function() {
+  powerButton.classList.toggle("power-on");
+  logo.classList.toggle("glow");
+});
+
+
+
+
+
